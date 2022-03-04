@@ -14,7 +14,6 @@ public enum ErrorType {
     private final String uri;
     private final String messageSource;
 
-
     ErrorType(String title, String uri, String messageSource) {
         this.title = title;
         this.uri = "https://cvc.com.br/" + uri;

@@ -6,6 +6,8 @@ import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoRequestDto;
 import com.cvc.consullthotels.service.ConsultHotelsService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,8 +34,13 @@ public class HotelInformationController {
     private final ConsultHotelsService consultHotelsService;
 
     @GetMapping("/city/{cityId}")
-    public ResponseEntity<Page<HotelInfoClientResponseDto>> findByCity(@PathVariable Long cityId,
-                                                                 @PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable){
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
+                    value = "Results page you want to retrieve (0..N)"),
+            @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
+                    value = "Number of records per page.")
+    })
+    public ResponseEntity<Page<HotelInfoClientResponseDto>> findByCity(@PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable, @PathVariable Long cityId){
         return ResponseEntity.ok(consultHotelsService.findAllByCity(cityId,pageable));
     }
 

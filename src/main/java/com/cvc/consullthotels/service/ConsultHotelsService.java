@@ -7,6 +7,7 @@ import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
 import com.cvc.consullthotels.service.client.ConsultHotelInfoClient;
 import com.cvc.consullthotels.service.mapper.HotelInfoResponseMapper;
+import com.cvc.consullthotels.service.redis.ConsultHotelInformationServiceCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,11 +29,14 @@ public class ConsultHotelsService {
     @Autowired
     private final ConsultHotelInfoClient consultHotelInfoClient;
 
+    @Autowired
+    private final ConsultHotelInformationServiceCache consultHotelInformationServiceCache;
+
     private final HotelInfoResponseMapper hotelInfoResponseMapper;
 
      public Page<HotelInfoClientResponseDto> findAllByCity(Long idCity, Pageable pageable){
 
-         List<HotelInfoClientResponseDto> allHotelsInformation = consultHotelInfoClient.findByIdCity(idCity);
+         List<HotelInfoClientResponseDto> allHotelsInformation = consultHotelInformationServiceCache.findByIdCity(idCity);
          allHotelsInformation = filterByPageable(allHotelsInformation, pageable);
 
          return new PageImpl<>(allHotelsInformation, pageable ,allHotelsInformation.size());
@@ -76,7 +80,7 @@ public class ConsultHotelsService {
          return pageable.isUnpaged()?
                  allHotelsInformation:
                  allHotelsInformation
-                                 .stream()
+                                 .parallelStream()
                                  .skip((long) pageable.getPageSize() * pageable.getPageNumber())
                                  .limit(pageable.getPageSize())
                                  .collect(Collectors.toList());
