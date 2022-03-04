@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorType {
+    INVALID_FORMAT_GENERIC("Invalid format parameterS","invalid-format-parameters","invalid.format.parameter.generic"),
     INVALID_FORMAT("Invalid format parameter","invalid-format-parameter","invalid.format.parameter"),
     CHECK_IN_DATE_INVALID("CheckIn invalid","checkIn-not-valid","checkIn.invalid"),
     CHECK_OUT_DATE_INVALID("CheckOut invalid","checkOut-not-valid","checkOut.invalid"),

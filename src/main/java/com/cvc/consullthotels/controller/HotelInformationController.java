@@ -5,6 +5,7 @@ import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoRequestDto;
+import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
 import com.cvc.consullthotels.service.ConsultHotelsService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -27,7 +28,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("hotel-reservation")
+@RequestMapping("/hotel-reservation")
 public class HotelInformationController {
 
     @Autowired
@@ -40,16 +41,16 @@ public class HotelInformationController {
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
                     value = "Number of records per page.")
     })
-    public ResponseEntity<Page<HotelInfoClientResponseDto>> findByCity(@PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable, @PathVariable Long cityId){
+    public ResponseEntity<Page<HotelInfoResponseDto>> findByCity(@PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable, @PathVariable Long cityId){
         return ResponseEntity.ok(consultHotelsService.findAllByCity(cityId,pageable));
     }
 
     @GetMapping("/hotel/{hotelId}")
-    public ResponseEntity<Object>  findByHotel(@PathVariable Long hotelId,
-                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull LocalDate checkInDate,
-                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull LocalDate checkOutDate,
-                                               @RequestParam @NotNull Integer numberOfAdults,
-                                               @RequestParam @NotNull Integer numberOfChildren)
+    public ResponseEntity<HotelInfoResponseDto>  findByHotel(@PathVariable Long hotelId,
+                                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull LocalDate checkInDate,
+                                                             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull LocalDate checkOutDate,
+                                                             @RequestParam @NotNull Integer numberOfAdults,
+                                                             @RequestParam @NotNull Integer numberOfChildren)
             throws CheckOutDateInvalidException, CheckInDateInvalidException, NumberOfClientsException {
 
         return ResponseEntity.ok(consultHotelsService.findByHotel(hotelId, checkInDate, checkOutDate ,numberOfAdults, numberOfChildren));

@@ -5,6 +5,7 @@ import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.ApiError;
 import com.cvc.consullthotels.enums.ErrorType;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
@@ -34,9 +36,12 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        String message = messageSource.getMessage(ErrorType.INVALID_FORMAT.getMessageSource(), null, LocaleContextHolder.getLocale());
-        ApiError body = crateBodyError(HttpStatus.BAD_REQUEST.value(), ErrorType.INVALID_FORMAT.getUri(),
-                ErrorType.INVALID_FORMAT.getTitle(), message);
+        if(ex instanceof MethodArgumentTypeMismatchException)
+            return handleMethodArgumentTypeMismatchException((MethodArgumentTypeMismatchException) ex, headers, status, request);
+
+        String message = messageSource.getMessage(ErrorType.INVALID_FORMAT_GENERIC.getMessageSource(), null, LocaleContextHolder.getLocale()) ;
+        ApiError body = crateBodyError(HttpStatus.BAD_REQUEST.value(), ErrorType.INVALID_FORMAT_GENERIC.getUri(),
+                ErrorType.INVALID_FORMAT_GENERIC.getTitle(), message);
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
@@ -74,6 +79,16 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
         ApiError body = crateBodyError(HttpStatus.BAD_REQUEST.value(), ErrorType.NUMBER_CLIENTS_INVALID.getUri(),
                 ErrorType.NUMBER_CLIENTS_INVALID.getTitle(), message);
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    private ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,
+                                                                             HttpHeaders headers, HttpStatus status, WebRequest request){
+        String message = messageSource.getMessage(ErrorType.INVALID_FORMAT.getMessageSource(), null, LocaleContextHolder.getLocale()) + ex.getName();
+
+        ApiError body = crateBodyError(HttpStatus.BAD_REQUEST.value(), ErrorType.INVALID_FORMAT.getUri(),
+                ErrorType.INVALID_FORMAT.getTitle(), message);
 
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }

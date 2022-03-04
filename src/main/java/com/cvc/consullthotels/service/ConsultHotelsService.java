@@ -34,9 +34,13 @@ public class ConsultHotelsService {
 
     private final HotelInfoResponseMapper hotelInfoResponseMapper;
 
-     public Page<HotelInfoClientResponseDto> findAllByCity(Long idCity, Pageable pageable){
+     public Page<HotelInfoResponseDto> findAllByCity(Long idCity, Pageable pageable){
 
-         List<HotelInfoClientResponseDto> allHotelsInformation = consultHotelInformationServiceCache.findByIdCity(idCity);
+         List<HotelInfoResponseDto> allHotelsInformation = consultHotelInformationServiceCache.findByIdCity(idCity)
+                                                     .stream()
+                                                     .map(hotelInfoResponseMapper::toHotelInfoResponseDto)
+                                                     .collect(Collectors.toList());
+
          allHotelsInformation = filterByPageable(allHotelsInformation, pageable);
 
          return new PageImpl<>(allHotelsInformation, pageable ,allHotelsInformation.size());
@@ -76,7 +80,7 @@ public class ConsultHotelsService {
              throw new NumberOfClientsException();
      }
 
-    private List<HotelInfoClientResponseDto> filterByPageable(List<HotelInfoClientResponseDto> allHotelsInformation, Pageable pageable){
+    private List<HotelInfoResponseDto> filterByPageable(List<HotelInfoResponseDto> allHotelsInformation, Pageable pageable){
          return pageable.isUnpaged()?
                  allHotelsInformation:
                  allHotelsInformation

@@ -16,6 +16,7 @@ public class ConsultHotelInformationServiceCache {
     @Autowired
     private final ConsultHotelInfoClient consultHotelInfoClient;
 
+
     @Cacheable(cacheNames = "hotelInformationPerCity",key = "#idCity")
     public List<HotelInfoClientResponseDto> findByIdCity(Long idCity){
         return consultHotelInfoClient.findByIdCity(idCity);

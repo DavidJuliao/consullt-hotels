@@ -1,6 +1,7 @@
 package com.cvc.consullthotels.domain.dto;
 
 import com.cvc.consullthotels.enums.CalculateCommission;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoomDto implements Serializable {
 
     private Long id;
