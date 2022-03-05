@@ -2,6 +2,8 @@ package com.cvc.consullthotels.service;
 
 import com.cvc.consullthotels.Exception.CheckInDateInvalidException;
 import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
+import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
+import com.cvc.consullthotels.Exception.HotelInformationNotFoundException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
@@ -34,12 +36,9 @@ public class ConsultHotelsService {
 
     private final HotelInfoResponseMapper hotelInfoResponseMapper;
 
-     public Page<HotelInfoResponseDto> findAllByCity(Long idCity, Pageable pageable){
+     public Page<HotelInfoResponseDto> findAllByCity(Long idCity, Pageable pageable) throws ConsultHotelInformationException {
 
-         List<HotelInfoResponseDto> allHotelsInformation = consultHotelInformationServiceCache.findByIdCity(idCity)
-                                                     .stream()
-                                                     .map(hotelInfoResponseMapper::toHotelInfoResponseDto)
-                                                     .collect(Collectors.toList());
+         List<HotelInfoResponseDto> allHotelsInformation = consultHotelInformationServiceCache.findByIdCity(idCity);
 
          allHotelsInformation = filterByPageable(allHotelsInformation, pageable);
 
@@ -48,10 +47,14 @@ public class ConsultHotelsService {
 
      public HotelInfoResponseDto findByHotel(Long hotelId, LocalDate checkInDate, LocalDate checkOutDate,
                                              Integer numberOfAdults, Integer numberOfChildren)
-             throws CheckOutDateInvalidException, CheckInDateInvalidException, NumberOfClientsException {
+             throws CheckOutDateInvalidException, CheckInDateInvalidException, NumberOfClientsException, ConsultHotelInformationException, HotelInformationNotFoundException {
 
          validateInformation(checkInDate, checkOutDate, numberOfAdults, numberOfChildren);
-         HotelInfoClientResponseDto hotelInfoClientResponseDto = consultHotelInfoClient.findByIdHotel(hotelId).stream().findAny().orElse(null);
+         HotelInfoClientResponseDto hotelInfoClientResponseDto = consultHotelInfoClient.findByIdHotel(hotelId)
+                 .stream()
+                 .findAny()
+                 .orElseThrow(() -> new HotelInformationNotFoundException(hotelId));
+
          HotelInfoResponseDto hotelInfoResponseDto = hotelInfoResponseMapper.toHotelInfoResponseDto(hotelInfoClientResponseDto);
          hotelInfoResponseDto.getRooms()
                  .forEach(room -> room.calculateTotalPrice(checkInDate, checkOutDate, numberOfAdults, numberOfChildren));

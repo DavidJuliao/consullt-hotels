@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
@@ -17,6 +15,14 @@ public class ApiError {
     private String type;
     private String title;
     private String detail;
-    private final LocalDateTime dateHour;
+
+    public static ApiError crateBodyError(int valueStatus, String type, String title, String detail){
+        return ApiError.builder()
+                .status(valueStatus)
+                .type(type)
+                .title(title)
+                .detail(detail)
+                .build();
+    }
 
 }

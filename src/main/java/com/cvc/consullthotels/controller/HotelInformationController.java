@@ -2,6 +2,8 @@ package com.cvc.consullthotels.controller;
 
 import com.cvc.consullthotels.Exception.CheckInDateInvalidException;
 import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
+import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
+import com.cvc.consullthotels.Exception.HotelInformationNotFoundException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoRequestDto;
@@ -37,11 +39,12 @@ public class HotelInformationController {
     @GetMapping("/city/{cityId}")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
-                    value = "Results page you want to retrieve (0..N)"),
+                    value = "Results page you want to retrieve"),
             @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
                     value = "Number of records per page.")
     })
-    public ResponseEntity<Page<HotelInfoResponseDto>> findByCity(@PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable, @PathVariable Long cityId){
+    public ResponseEntity<Page<HotelInfoResponseDto>> findByCity(@PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
+                                                                 @PathVariable Long cityId) throws ConsultHotelInformationException {
         return ResponseEntity.ok(consultHotelsService.findAllByCity(cityId,pageable));
     }
 
@@ -51,7 +54,7 @@ public class HotelInformationController {
                                                              @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull LocalDate checkOutDate,
                                                              @RequestParam @NotNull Integer numberOfAdults,
                                                              @RequestParam @NotNull Integer numberOfChildren)
-            throws CheckOutDateInvalidException, CheckInDateInvalidException, NumberOfClientsException {
+            throws CheckOutDateInvalidException, CheckInDateInvalidException, NumberOfClientsException, ConsultHotelInformationException, HotelInformationNotFoundException {
 
         return ResponseEntity.ok(consultHotelsService.findByHotel(hotelId, checkInDate, checkOutDate ,numberOfAdults, numberOfChildren));
     }
