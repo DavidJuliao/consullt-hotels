@@ -1,7 +1,6 @@
 package com.cvc.consullthotels.service.redis;
 
 import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
-import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
 import com.cvc.consullthotels.service.client.ConsultHotelInfoClient;
 import com.cvc.consullthotels.service.mapper.HotelInfoResponseMapper;

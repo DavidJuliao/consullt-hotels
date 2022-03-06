@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class HotelInformationControllerTest {
+class HotelInformationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -209,8 +209,8 @@ public class HotelInformationControllerTest {
         String message = "Number of Clients must be greater than zero";
         ApiError body = crateBodyError(HttpStatus.BAD_REQUEST.value(), ErrorType.NUMBER_CLIENTS_INVALID.getUri(),
                 ErrorType.NUMBER_CLIENTS_INVALID.getTitle(), message);
-        LocalDate checkInDate = LocalDate.now().minusDays(1);
-        LocalDate checkOutDate = checkInDate.minusDays(1);
+        LocalDate checkInDate = LocalDate.now().plusDays(1L);
+        LocalDate checkOutDate = checkInDate.plusDays(1L);
         Integer numberOfAdults = 0;
         Integer numberOfChild = 0;
 
