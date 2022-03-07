@@ -10,12 +10,11 @@ import com.cvc.consullthotels.domain.dto.CategoryDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
 import com.cvc.consullthotels.domain.dto.PriceDetailDto;
-import com.cvc.consullthotels.domain.dto.PriceDto;
-import com.cvc.consullthotels.domain.dto.RoomClientDto;
 import com.cvc.consullthotels.domain.dto.RoomDto;
 import com.cvc.consullthotels.enums.ErrorType;
+import com.cvc.consullthotels.security.TokenProvider;
 import com.cvc.consullthotels.service.ConsultHotelsService;
-import com.cvc.consullthotels.service.client.ConsultHotelInfoClient;
+import com.cvc.consullthotels.service.client.ConsultHotelInformationClient;
 import com.cvc.consullthotels.service.mapper.HotelInfoResponseMapper;
 import com.cvc.consullthotels.service.redis.ConsultHotelInformationServiceCache;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,8 +56,11 @@ class HotelInformationControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private TokenProvider tokenProvider;
+
     @MockBean
-    private ConsultHotelInfoClient consultHotelInfoClient;
+    private ConsultHotelInformationClient consultHotelInfoClient;
 
     @MockBean
     private ConsultHotelInformationServiceCache consultHotelInformationServiceCache;
@@ -73,6 +75,7 @@ class HotelInformationControllerTest {
     private List<HotelInfoResponseDto> hotelInformationClientResponses;
     private  HotelInfoResponseDto hotelInfoResponseDto;
     private Page<HotelInfoClientResponseDto> pageHotelInformation;
+    private String token;
 
     private static final String GET_BY_CITY="/hotel-reservation/city/{cityId}";
     private static final String GET_BY_HOTEL="/hotel-reservation/hotel/{hotelId}";
@@ -80,12 +83,14 @@ class HotelInformationControllerTest {
     private static final String PARAM_CHECK_OUT = "checkOutDate";
     private static final String PARAM_NUMBER_OF_ADULTS = "numberOfAdults";
     private static final String PARAM_NUMBER_OF_CHILDREN = "numberOfChildren";
+    private static final String AUTHORIZATION = "Authorization";
 
     @BeforeEach
     public void setup(){
         hotelInfoClientResponseDto = new HotelInfoClientResponseDto(1L,"Hotel test1","1032","Porto Seguro",new ArrayList<>());
         hotelInfoResponseDto = new HotelInfoResponseDto(1L,"Hotel test1","Porto Seguro",new ArrayList<>());
         fillHotels();
+        token = tokenProvider.generateBearerJwtToken("abc");
     }
 
     @Test
@@ -94,6 +99,7 @@ class HotelInformationControllerTest {
         when(consultHotelsService.findAllByCity(any(Long.class),any(Pageable.class))).thenReturn(responseDtoPage);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(GET_BY_CITY,"1032")
+                .header(AUTHORIZATION, token)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
 
@@ -112,6 +118,7 @@ class HotelInformationControllerTest {
         when(consultHotelsService.findAllByCity(any(Long.class),any(Pageable.class))).thenThrow(new ConsultHotelInformationException());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(GET_BY_CITY,"1035")
+                .header(AUTHORIZATION, token)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE);
 
@@ -133,6 +140,7 @@ class HotelInformationControllerTest {
                 .thenReturn(hotelInfoResponseDto);
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(GET_BY_HOTEL,"1")
+                .header(AUTHORIZATION, token)
                 .param(PARAM_CHECK_IN,dateToString(checkInDate))
                 .param(PARAM_CHECK_OUT,dateToString(checkOutDate))
                 .param(PARAM_NUMBER_OF_ADULTS,asJsonString(numberOfAdults))
@@ -162,6 +170,7 @@ class HotelInformationControllerTest {
                 .thenThrow(new CheckInDateInvalidException());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(GET_BY_HOTEL,"1")
+                .header(AUTHORIZATION, token)
                 .param(PARAM_CHECK_IN,dateToString(checkInDate))
                 .param(PARAM_CHECK_OUT,dateToString(checkOutDate))
                 .param(PARAM_NUMBER_OF_ADULTS,asJsonString(numberOfAdults))
@@ -190,6 +199,7 @@ class HotelInformationControllerTest {
                 .thenThrow(new CheckOutDateInvalidException());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(GET_BY_HOTEL,"1")
+                .header(AUTHORIZATION, token)
                 .param(PARAM_CHECK_IN,dateToString(checkInDate))
                 .param(PARAM_CHECK_OUT,dateToString(checkOutDate))
                 .param(PARAM_NUMBER_OF_ADULTS,asJsonString(numberOfAdults))
@@ -218,6 +228,7 @@ class HotelInformationControllerTest {
                 .thenThrow(new NumberOfClientsException());
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(GET_BY_HOTEL,"1")
+                .header(AUTHORIZATION, token)
                 .param(PARAM_CHECK_IN,dateToString(checkInDate))
                 .param(PARAM_CHECK_OUT,dateToString(checkOutDate))
                 .param(PARAM_NUMBER_OF_ADULTS,asJsonString(numberOfAdults))

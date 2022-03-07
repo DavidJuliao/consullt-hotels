@@ -37,12 +37,7 @@ public class HotelInformationController {
     private final ConsultHotelsService consultHotelsService;
 
     @GetMapping("/city/{cityId}")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "integer", paramType = "query",
-                    value = "Results page you want to retrieve"),
-            @ApiImplicitParam(name = "size", dataType = "integer", paramType = "query",
-                    value = "Number of records per page.")
-    })
+    @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
     public ResponseEntity<Page<HotelInfoResponseDto>> findByCity(@PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
                                                                  @PathVariable Long cityId) throws ConsultHotelInformationException {
         return ResponseEntity.ok(consultHotelsService.findAllByCity(cityId,pageable));

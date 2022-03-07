@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 @FeignClient(url = "https://cvcbackendhotel.herokuapp.com/hotels/", value = "consultHotelInfo")
-public interface ConsultHotelInfoClient {
+public interface ConsultHotelInformationClient {
 
     @GetMapping("avail/{ID_da_Cidade}")
     List<HotelInfoClientResponseDto> findByIdCity(@PathVariable("ID_da_Cidade") Long idCity) throws ConsultHotelInformationException;

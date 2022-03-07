@@ -3,10 +3,12 @@ package com.cvc.consullthotels.Exception.handler;
 import com.cvc.consullthotels.Exception.CheckInDateInvalidException;
 import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
 import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
+import com.cvc.consullthotels.Exception.GoogleTokenInvalidException;
 import com.cvc.consullthotels.Exception.HotelInformationNotFoundException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.ApiError;
 import com.cvc.consullthotels.enums.ErrorType;
+import feign.FeignException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -97,6 +99,16 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
                 ErrorType.HOTEL_INFORMATION_NOT_FOUNT.getTitle(), message);
 
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NO_CONTENT, request);
+    }
+
+    @ExceptionHandler(FeignException.class)
+    protected ResponseEntity<Object> handleGoogleTokenInvalidException(FeignException ex, WebRequest request) {
+        String message = messageSource.getMessage(ErrorType.GOOGLE_TOKEN_INVALID.getMessageSource(), null, LocaleContextHolder.getLocale());
+
+        ApiError body = crateBodyError(HttpStatus.BAD_REQUEST.value(), ErrorType.GOOGLE_TOKEN_INVALID.getUri(),
+                ErrorType.GOOGLE_TOKEN_INVALID.getTitle(), message);
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     private ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,

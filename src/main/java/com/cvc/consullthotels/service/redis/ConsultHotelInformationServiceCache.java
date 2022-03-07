@@ -2,7 +2,7 @@ package com.cvc.consullthotels.service.redis;
 
 import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
 import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
-import com.cvc.consullthotels.service.client.ConsultHotelInfoClient;
+import com.cvc.consullthotels.service.client.ConsultHotelInformationClient;
 import com.cvc.consullthotels.service.mapper.HotelInfoResponseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class ConsultHotelInformationServiceCache {
 
     @Autowired
-    private final ConsultHotelInfoClient consultHotelInfoClient;
+    private final ConsultHotelInformationClient consultHotelInfoClient;
 
     private final HotelInfoResponseMapper hotelInfoResponseMapper;
 

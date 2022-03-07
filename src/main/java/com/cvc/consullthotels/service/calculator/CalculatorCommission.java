@@ -1,4 +1,4 @@
-package com.cvc.consullthotels.calculator;
+package com.cvc.consullthotels.service.calculator;
 
 import com.cvc.consullthotels.enums.CalculateCommission;
 
@@ -16,8 +16,8 @@ public class CalculatorCommission {
         BigDecimal days = BigDecimal.valueOf(getDaysByDates(initialDate, finalDate));
         BigDecimal valueAdults = days.multiply(adultValue).multiply(BigDecimal.valueOf(quantityAdults));
         BigDecimal valueChild = days.multiply(childValue).multiply(BigDecimal.valueOf(quantityChild));
-        BigDecimal totalValues = valueAdults.add(valueChild);
-        BigDecimal valueCommission = totalValues.divide(CalculateCommission.COMMISSION.getValue(), RoundingMode.HALF_EVEN);
-        return valueCommission.add(totalValues);
+        BigDecimal totalValueWithoutCommission = valueAdults.add(valueChild);
+        BigDecimal valueCommission = totalValueWithoutCommission.divide(CalculateCommission.COMMISSION.getValue(), RoundingMode.HALF_EVEN);
+         return valueCommission.add(totalValueWithoutCommission);
     }
 }

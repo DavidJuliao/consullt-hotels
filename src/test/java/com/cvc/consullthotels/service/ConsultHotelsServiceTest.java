@@ -4,8 +4,6 @@ import com.cvc.consullthotels.Exception.CheckInDateInvalidException;
 import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
 import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
-import com.cvc.consullthotels.Utils.JsonUtils;
-import com.cvc.consullthotels.domain.dto.ApiError;
 import com.cvc.consullthotels.domain.dto.CategoryDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
@@ -13,8 +11,7 @@ import com.cvc.consullthotels.domain.dto.PriceDetailDto;
 import com.cvc.consullthotels.domain.dto.PriceDto;
 import com.cvc.consullthotels.domain.dto.RoomClientDto;
 import com.cvc.consullthotels.domain.dto.RoomDto;
-import com.cvc.consullthotels.enums.ErrorType;
-import com.cvc.consullthotels.service.client.ConsultHotelInfoClient;
+import com.cvc.consullthotels.service.client.ConsultHotelInformationClient;
 import com.cvc.consullthotels.service.mapper.HotelInfoResponseMapper;
 import com.cvc.consullthotels.service.redis.ConsultHotelInformationServiceCache;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,12 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,9 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.cvc.consullthotels.Utils.DateUtils.dateToString;
-import static com.cvc.consullthotels.Utils.JsonUtils.asJsonString;
-import static com.cvc.consullthotels.domain.dto.ApiError.crateBodyError;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,7 +42,7 @@ import static org.mockito.Mockito.when;
 class ConsultHotelsServiceTest {
 
     @MockBean
-    private ConsultHotelInfoClient consultHotelInfoClient;
+    private ConsultHotelInformationClient consultHotelInfoClient;
 
     private List<HotelInfoResponseDto> hotelInformationResponses;
     HotelInfoResponseDto hotelInfoResponseDto;

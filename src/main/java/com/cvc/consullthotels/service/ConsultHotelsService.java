@@ -7,7 +7,7 @@ import com.cvc.consullthotels.Exception.HotelInformationNotFoundException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
 import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
-import com.cvc.consullthotels.service.client.ConsultHotelInfoClient;
+import com.cvc.consullthotels.service.client.ConsultHotelInformationClient;
 import com.cvc.consullthotels.service.mapper.HotelInfoResponseMapper;
 import com.cvc.consullthotels.service.redis.ConsultHotelInformationServiceCache;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import static com.cvc.consullthotels.Utils.DateUtils.isTodayOrMoreThanCurrent;
 public class ConsultHotelsService {
 
     @Autowired
-    private final ConsultHotelInfoClient consultHotelInfoClient;
+    private final ConsultHotelInformationClient consultHotelInfoClient;
 
     @Autowired
     private final ConsultHotelInformationServiceCache consultHotelInformationServiceCache;

@@ -1,14 +1,21 @@
 package com.cvc.consullthotels.config;
 
+import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.builders.RequestParameterBuilder;
+import springfox.documentation.service.ParameterType;
+import springfox.documentation.service.RequestParameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
-//@Profile(value = {"dev"})
 public class SwaggerConfig {
 
     @Bean
@@ -18,27 +25,20 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .directModelSubstitute(Pageable.class, SwaggerPageable.class);
     }
 
 //    private List<RequestParameter> globalParameterList() {
 //
-//        val appKey =
+//        val authorization =
 //                new RequestParameterBuilder()
-//                        .name("X-ILY-API-appKey")
-//                        .description("Key for the Auth")
+//                        .name("Authorization")
+//                        .description("Token Authorization")
 //                        .required(true)
 //                        .in(ParameterType.HEADER)
 //                        .build();
 //
-//        val appToken =
-//                new RequestParameterBuilder()
-//                        .name("X-ILY-API-appToken")
-//                        .description("Token for the key Auth")
-//                        .required(true)
-//                        .in(ParameterType.HEADER)
-//                        .build();
-//
-//        return Arrays.asList(appKey, appToken);
+//        return List.of(authorization);
 //    }
 }

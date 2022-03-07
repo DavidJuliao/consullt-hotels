@@ -1,6 +1,6 @@
 package com.cvc.consullthotels.enums;
 
-import com.cvc.consullthotels.calculator.CalculatorCommission;
+import com.cvc.consullthotels.service.calculator.CalculatorCommission;
 
 import java.math.BigDecimal;
 

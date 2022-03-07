@@ -4,6 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum ErrorType {
+    GOOGLE_TOKEN_INVALID("Invalid Token","invalid-token","invalid.token"),
+    UNAUTHORIZED("Unauthorized action","unauthorized-action","authentication.unauthorized"),
     CONSULT_HOTEL_INFORMATION("error in consult of hotel information","error-consult-hotel-information","error.consult.hotel.information"),
     HOTEL_INFORMATION_NOT_FOUNT("No hotel information found","hotel-information-not-found","hotel.information.not.found"),
     INVALID_FORMAT_GENERIC("Invalid format parameters","invalid-format-parameters","invalid.format.parameter.generic"),
