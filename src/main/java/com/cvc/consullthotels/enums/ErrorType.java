@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ErrorType {
     REDIS_CONNECTION_ERROR("Redis Connection error","redis-connection-error","redis.connection.error"),
+    GOOGLE_TOKEN_VALIDATION_ERROR("Google Token Validation Error","google-token-validation-error","google.token.validation.error"),
     GOOGLE_TOKEN_INVALID("Invalid Token","invalid-token","invalid.token"),
     UNAUTHORIZED("Unauthorized action","unauthorized-action","authentication.unauthorized"),
     CONSULT_HOTEL_INFORMATION("error in consult of hotel information","error-consult-hotel-information","error.consult.hotel.information"),

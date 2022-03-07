@@ -75,15 +75,6 @@ class ConsultHotelsServiceTest {
     }
 
     @Test
-    void findByCity_AnErrorOccursWhenQueryingHotels_returnConsultHotelInformationException() throws Exception{
-        when(consultHotelInformationServiceCache.findByIdCity(any(Long.class))).thenThrow(new ConsultHotelInformationException());
-
-        assertThrows(ConsultHotelInformationException.class, () -> {
-            consultHotelsService.findAllByCity(1032L,Pageable.unpaged());
-        });
-    }
-
-    @Test
     void findByHotel_AllDataInformed_workFine() throws Exception{
         LocalDate checkInDate = LocalDate.now().plusDays(1L);
         LocalDate checkOutDate = checkInDate.plusDays(1L);

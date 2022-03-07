@@ -3,6 +3,7 @@ package com.cvc.consullthotels.service;
 import com.cvc.consullthotels.Exception.CheckInDateInvalidException;
 import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
 import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
+import com.cvc.consullthotels.Exception.FeignGeneralException;
 import com.cvc.consullthotels.Exception.HotelInformationNotFoundException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.HotelInfoClientResponseDto;
@@ -10,6 +11,7 @@ import com.cvc.consullthotels.domain.dto.HotelInfoResponseDto;
 import com.cvc.consullthotels.service.client.ConsultHotelInformationClient;
 import com.cvc.consullthotels.service.mapper.HotelInfoResponseMapper;
 import com.cvc.consullthotels.service.redis.ConsultHotelInformationServiceCache;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,7 +38,7 @@ public class ConsultHotelsService {
 
     private final HotelInfoResponseMapper hotelInfoResponseMapper;
 
-     public Page<HotelInfoResponseDto> findAllByCity(Long idCity, Pageable pageable) throws ConsultHotelInformationException, HotelInformationNotFoundException {
+     public Page<HotelInfoResponseDto> findAllByCity(Long idCity, Pageable pageable) throws FeignGeneralException, HotelInformationNotFoundException {
 
          List<HotelInfoResponseDto> allHotelsInformation = consultHotelInformationServiceCache.findByIdCity(idCity);
 
@@ -51,19 +53,30 @@ public class ConsultHotelsService {
 
      public HotelInfoResponseDto findByHotel(Long hotelId, LocalDate checkInDate, LocalDate checkOutDate,
                                              Integer numberOfAdults, Integer numberOfChildren)
-             throws CheckOutDateInvalidException, CheckInDateInvalidException, NumberOfClientsException, ConsultHotelInformationException, HotelInformationNotFoundException {
+             throws CheckOutDateInvalidException, CheckInDateInvalidException, NumberOfClientsException, HotelInformationNotFoundException {
 
          validateInformation(checkInDate, checkOutDate, numberOfAdults, numberOfChildren);
-         HotelInfoClientResponseDto hotelInfoClientResponseDto = consultHotelInfoClient.findByIdHotel(hotelId)
-                 .stream()
-                 .findAny()
-                 .orElseThrow(() -> new HotelInformationNotFoundException(String.format("hotelId: %s",hotelId)));
+         HotelInfoClientResponseDto hotelInfoClientResponseDto = findByIdHotel(hotelId);
 
          HotelInfoResponseDto hotelInfoResponseDto = hotelInfoResponseMapper.toHotelInfoResponseDto(hotelInfoClientResponseDto);
          hotelInfoResponseDto.getRooms()
                  .forEach(room -> room.calculateTotalPrice(checkInDate, checkOutDate, numberOfAdults, numberOfChildren));
 
          return hotelInfoResponseDto;
+     }
+
+     private HotelInfoClientResponseDto findByIdHotel(Long hotelId) throws HotelInformationNotFoundException {
+         List<HotelInfoClientResponseDto>  hotelInformationClients;
+
+         try{
+             hotelInformationClients= consultHotelInfoClient.findByIdHotel(hotelId);
+         }catch (FeignException fex){
+            throw new FeignGeneralException(fex.status(), fex.getMessage(), fex.request(), fex.getCause());
+        }
+         return
+                 hotelInformationClients.stream()
+                 .findAny()
+                 .orElseThrow(() -> new HotelInformationNotFoundException(String.format("hotelId: %s",hotelId)));
      }
 
      private void validateInformation(LocalDate checkInDate, LocalDate checkOutDate, Integer numberOfAdults, Integer numberOfChildren) throws CheckInDateInvalidException, CheckOutDateInvalidException, NumberOfClientsException {

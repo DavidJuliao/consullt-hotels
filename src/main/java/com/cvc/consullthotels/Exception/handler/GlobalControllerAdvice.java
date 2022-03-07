@@ -3,6 +3,7 @@ package com.cvc.consullthotels.Exception.handler;
 import com.cvc.consullthotels.Exception.CheckInDateInvalidException;
 import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
 import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
+import com.cvc.consullthotels.Exception.FeignGeneralException;
 import com.cvc.consullthotels.Exception.HotelInformationNotFoundException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.ApiError;
@@ -23,7 +24,13 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.Arrays;
+
 import static com.cvc.consullthotels.domain.dto.ApiError.crateBodyError;
+import static com.cvc.consullthotels.enums.ErrorType.CONSULT_HOTEL_INFORMATION;
+import static com.cvc.consullthotels.enums.ErrorType.GOOGLE_TOKEN_INVALID;
+import static com.cvc.consullthotels.enums.ErrorType.GOOGLE_TOKEN_VALIDATION_ERROR;
+import static com.cvc.consullthotels.enums.ErrorType.HOTEL_INFORMATION_NOT_FOUNT;
 import static java.util.Objects.isNull;
 
 @ControllerAdvice
@@ -83,32 +90,44 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConsultHotelInformationException.class)
     protected ResponseEntity<Object> handleConsultHotelInformationException(ConsultHotelInformationException ex, WebRequest request) {
-        String message = messageSource.getMessage(ErrorType.CONSULT_HOTEL_INFORMATION.getMessageSource(), null, LocaleContextHolder.getLocale());
+        String message = messageSource.getMessage(CONSULT_HOTEL_INFORMATION.getMessageSource(), null, LocaleContextHolder.getLocale());
 
-        ApiError body = crateBodyError(HttpStatus.INTERNAL_SERVER_ERROR.value(), ErrorType.CONSULT_HOTEL_INFORMATION.getUri(),
-                ErrorType.CONSULT_HOTEL_INFORMATION.getTitle(), message);
+        ApiError body = crateBodyError(HttpStatus.INTERNAL_SERVER_ERROR.value(), CONSULT_HOTEL_INFORMATION.getUri(),
+                CONSULT_HOTEL_INFORMATION.getTitle(), message);
 
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler(HotelInformationNotFoundException.class)
     protected ResponseEntity<ApiError> handleHotelInformationNotFoundException(HotelInformationNotFoundException ex, WebRequest request) {
-        String message = messageSource.getMessage(ErrorType.HOTEL_INFORMATION_NOT_FOUNT.getMessageSource(), null, LocaleContextHolder.getLocale()) + ex.getMessage();
+        String message = messageSource.getMessage(HOTEL_INFORMATION_NOT_FOUNT.getMessageSource(), null, LocaleContextHolder.getLocale()) + ex.getMessage();
 
-        ApiError body = crateBodyError(HttpStatus.NO_CONTENT.value(), ErrorType.HOTEL_INFORMATION_NOT_FOUNT.getUri(),
-                ErrorType.HOTEL_INFORMATION_NOT_FOUNT.getTitle(), message);
+        ApiError body = crateBodyError(HttpStatus.NO_CONTENT.value(), HOTEL_INFORMATION_NOT_FOUNT.getUri(),
+                HOTEL_INFORMATION_NOT_FOUNT.getTitle(), message);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(body);
     }
 
-    @ExceptionHandler(FeignException.class)
-    protected ResponseEntity<Object> handleGoogleTokenInvalidException(FeignException ex, WebRequest request) {
-        String message = messageSource.getMessage(ErrorType.GOOGLE_TOKEN_INVALID.getMessageSource(), null, LocaleContextHolder.getLocale());
+    @ExceptionHandler(FeignGeneralException.class)
+    protected ResponseEntity<Object> handleGoogleTokenInvalidException(FeignGeneralException ex, WebRequest request) {
+        ErrorType errorType;
 
-        ApiError body = crateBodyError(HttpStatus.BAD_REQUEST.value(), ErrorType.GOOGLE_TOKEN_INVALID.getUri(),
-                ErrorType.GOOGLE_TOKEN_INVALID.getTitle(), message);
+        if(ex.request().url().contains("id_token")){
+            errorType = ex.status() <= 499 ?GOOGLE_TOKEN_INVALID:GOOGLE_TOKEN_VALIDATION_ERROR;
+        }else{
+            errorType = ex.status() <= 499 ?HOTEL_INFORMATION_NOT_FOUNT:CONSULT_HOTEL_INFORMATION;
+        }
+        HttpStatus status = Arrays.stream(HttpStatus.values())
+                                .filter(httpStatus -> httpStatus.value() == ex.status())
+                                .findAny()
+                                .orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        String message = messageSource.getMessage(errorType.getMessageSource(), null, LocaleContextHolder.getLocale());
+
+        ApiError body = crateBodyError(ex.status(), errorType.getUri(),
+                errorType.getTitle(), message);
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), status, request);
     }
 
     @ExceptionHandler(RedisConnectionFailureException.class)

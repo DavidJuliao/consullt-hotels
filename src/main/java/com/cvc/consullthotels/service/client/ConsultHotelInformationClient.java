@@ -14,9 +14,9 @@ import java.util.List;
 public interface ConsultHotelInformationClient {
 
     @GetMapping("avail/{ID_da_Cidade}")
-    List<HotelInfoClientResponseDto> findByIdCity(@PathVariable("ID_da_Cidade") Long idCity) throws ConsultHotelInformationException;
+    List<HotelInfoClientResponseDto> findByIdCity(@PathVariable("ID_da_Cidade") Long idCity);
 
     @GetMapping("/{ID_Do_Hotel}")
-    List<HotelInfoClientResponseDto> findByIdHotel(@PathVariable("ID_Do_Hotel") Long idHotel)throws ConsultHotelInformationException;
+    List<HotelInfoClientResponseDto> findByIdHotel(@PathVariable("ID_Do_Hotel") Long idHotel);
 
 }

@@ -3,6 +3,7 @@ package com.cvc.consullthotels.controller;
 import com.cvc.consullthotels.Exception.CheckInDateInvalidException;
 import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
 import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
+import com.cvc.consullthotels.Exception.FeignGeneralException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.Utils.JsonUtils;
 import com.cvc.consullthotels.domain.dto.ApiError;
@@ -17,9 +18,11 @@ import com.cvc.consullthotels.service.ConsultHotelsService;
 import com.cvc.consullthotels.service.client.ConsultHotelInformationClient;
 import com.cvc.consullthotels.service.mapper.HotelInfoResponseMapper;
 import com.cvc.consullthotels.service.redis.ConsultHotelInformationServiceCache;
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,6 +93,7 @@ class HotelInformationControllerTest {
         hotelInfoResponseDto = new HotelInfoResponseDto(1L,"Hotel test1","Porto Seguro",new ArrayList<>());
         fillHotels();
         token = tokenProvider.generateBearerJwtToken("Authorization");
+
     }
 
     @Test
@@ -107,25 +111,6 @@ class HotelInformationControllerTest {
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.getContentAsString()).isEqualTo(JsonUtils.asJsonString(responseDtoPage));
-    }
-
-    @Test
-    void findByCity_AnErrorOccursWhenQueryingHotels_returnInternalServerError() throws Exception{
-        String message = "An error occurred while fetching hotel information";
-        ApiError body = ApiError.crateBodyError(HttpStatus.INTERNAL_SERVER_ERROR.value(), ErrorType.CONSULT_HOTEL_INFORMATION.getUri(),
-                ErrorType.CONSULT_HOTEL_INFORMATION.getTitle(), message);
-        when(consultHotelsService.findAllByCity(any(Long.class),any(Pageable.class))).thenThrow(new ConsultHotelInformationException());
-
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(GET_BY_CITY,"1035")
-                .header(AUTHORIZATION, token)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE);
-
-        final MockHttpServletResponse response = mockMvc.perform(request)
-                .andReturn().getResponse();
-
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        assertThat(response.getContentAsString()).isEqualTo(JsonUtils.asJsonString(body));
     }
 
     @Test
