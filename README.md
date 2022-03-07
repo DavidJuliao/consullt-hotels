@@ -26,6 +26,10 @@ Instalar o Redis para que a funcionalidade de chache funcione, pode fazê-lo seg
 ## 🚀 Começando
 
 Essas instruções permitirão que você obtenha uma cópia do projeto em operação na sua máquina local para fins de desenvolvimento e teste.
+Pagina principal Swagger:
+```
+http://localhost:8080/swagger-ui/index.html
+```
 
 Para conseguir o Authorization para ter acesso ao principal endpoint terá que conseguir um token que 
 é gerado no path:
