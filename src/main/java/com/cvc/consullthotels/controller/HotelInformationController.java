@@ -39,7 +39,7 @@ public class HotelInformationController {
     @GetMapping("/city/{cityId}")
     @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
     public ResponseEntity<Page<HotelInfoResponseDto>> findByCity(@PageableDefault(sort = "name", direction = Sort.Direction.ASC) Pageable pageable,
-                                                                 @PathVariable Long cityId) throws ConsultHotelInformationException {
+                                                                 @PathVariable Long cityId) throws ConsultHotelInformationException, HotelInformationNotFoundException {
         return ResponseEntity.ok(consultHotelsService.findAllByCity(cityId,pageable));
     }
 

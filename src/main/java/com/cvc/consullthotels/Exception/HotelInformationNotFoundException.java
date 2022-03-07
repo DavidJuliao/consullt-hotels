@@ -2,9 +2,9 @@ package com.cvc.consullthotels.Exception;
 
 public class HotelInformationNotFoundException extends Exception{
 
-    private final String hotelId;
+    private final String message;
 
-    public HotelInformationNotFoundException(Long hotelId) {
-        this.hotelId = String.valueOf(hotelId);
+    public HotelInformationNotFoundException(String message) {
+        this.message = String.valueOf(message);
     }
 }

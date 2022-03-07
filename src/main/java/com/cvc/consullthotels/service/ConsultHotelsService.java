@@ -36,9 +36,13 @@ public class ConsultHotelsService {
 
     private final HotelInfoResponseMapper hotelInfoResponseMapper;
 
-     public Page<HotelInfoResponseDto> findAllByCity(Long idCity, Pageable pageable) throws ConsultHotelInformationException {
+     public Page<HotelInfoResponseDto> findAllByCity(Long idCity, Pageable pageable) throws ConsultHotelInformationException, HotelInformationNotFoundException {
 
          List<HotelInfoResponseDto> allHotelsInformation = consultHotelInformationServiceCache.findByIdCity(idCity);
+
+         if(allHotelsInformation.isEmpty()){
+             throw new HotelInformationNotFoundException(String.format("idCity: %s",idCity));
+         }
 
          allHotelsInformation = filterByPageable(allHotelsInformation, pageable);
 
@@ -53,7 +57,7 @@ public class ConsultHotelsService {
          HotelInfoClientResponseDto hotelInfoClientResponseDto = consultHotelInfoClient.findByIdHotel(hotelId)
                  .stream()
                  .findAny()
-                 .orElseThrow(() -> new HotelInformationNotFoundException(hotelId));
+                 .orElseThrow(() -> new HotelInformationNotFoundException(String.format("hotelId: %s",hotelId)));
 
          HotelInfoResponseDto hotelInfoResponseDto = hotelInfoResponseMapper.toHotelInfoResponseDto(hotelInfoClientResponseDto);
          hotelInfoResponseDto.getRooms()

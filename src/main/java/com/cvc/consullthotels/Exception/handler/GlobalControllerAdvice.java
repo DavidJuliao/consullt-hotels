@@ -3,7 +3,6 @@ package com.cvc.consullthotels.Exception.handler;
 import com.cvc.consullthotels.Exception.CheckInDateInvalidException;
 import com.cvc.consullthotels.Exception.CheckOutDateInvalidException;
 import com.cvc.consullthotels.Exception.ConsultHotelInformationException;
-import com.cvc.consullthotels.Exception.GoogleTokenInvalidException;
 import com.cvc.consullthotels.Exception.HotelInformationNotFoundException;
 import com.cvc.consullthotels.Exception.NumberOfClientsException;
 import com.cvc.consullthotels.domain.dto.ApiError;
@@ -13,6 +12,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,13 +92,13 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(HotelInformationNotFoundException.class)
-    protected ResponseEntity<Object> handleHotelInformationNotFoundException(HotelInformationNotFoundException ex, WebRequest request) {
+    protected ResponseEntity<ApiError> handleHotelInformationNotFoundException(HotelInformationNotFoundException ex, WebRequest request) {
         String message = messageSource.getMessage(ErrorType.HOTEL_INFORMATION_NOT_FOUNT.getMessageSource(), null, LocaleContextHolder.getLocale()) + ex.getMessage();
 
         ApiError body = crateBodyError(HttpStatus.NO_CONTENT.value(), ErrorType.HOTEL_INFORMATION_NOT_FOUNT.getUri(),
                 ErrorType.HOTEL_INFORMATION_NOT_FOUNT.getTitle(), message);
 
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NO_CONTENT, request);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(body);
     }
 
     @ExceptionHandler(FeignException.class)
@@ -109,6 +109,16 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
                 ErrorType.GOOGLE_TOKEN_INVALID.getTitle(), message);
 
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(RedisConnectionFailureException.class)
+    protected ResponseEntity<Object> handleGoogleTokenInvalidException(RedisConnectionFailureException ex, WebRequest request) {
+        String message = messageSource.getMessage(ErrorType.REDIS_CONNECTION_ERROR.getMessageSource(), null, LocaleContextHolder.getLocale());
+
+        ApiError body = crateBodyError(HttpStatus.INTERNAL_SERVER_ERROR.value(), ErrorType.REDIS_CONNECTION_ERROR.getUri(),
+                ErrorType.REDIS_CONNECTION_ERROR.getTitle(), message);
+
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     private ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,
