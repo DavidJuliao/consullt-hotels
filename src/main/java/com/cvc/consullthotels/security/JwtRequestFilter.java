@@ -21,7 +21,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private TokenProvider jwtTokenUtil;
 
-    @Value("${x.ily.api.appkey}")
+    @Value("${api.appKey}")
     private String appKeyValue;
 
     @Override

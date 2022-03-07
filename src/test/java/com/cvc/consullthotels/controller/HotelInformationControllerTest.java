@@ -74,7 +74,6 @@ class HotelInformationControllerTest {
     HotelInfoClientResponseDto hotelInfoClientResponseDto;
     private List<HotelInfoResponseDto> hotelInformationClientResponses;
     private  HotelInfoResponseDto hotelInfoResponseDto;
-    private Page<HotelInfoClientResponseDto> pageHotelInformation;
     private String token;
 
     private static final String GET_BY_CITY="/hotel-reservation/city/{cityId}";
@@ -90,7 +89,7 @@ class HotelInformationControllerTest {
         hotelInfoClientResponseDto = new HotelInfoClientResponseDto(1L,"Hotel test1","1032","Porto Seguro",new ArrayList<>());
         hotelInfoResponseDto = new HotelInfoResponseDto(1L,"Hotel test1","Porto Seguro",new ArrayList<>());
         fillHotels();
-        token = tokenProvider.generateBearerJwtToken("abc");
+        token = tokenProvider.generateBearerJwtToken("Authorization");
     }
 
     @Test

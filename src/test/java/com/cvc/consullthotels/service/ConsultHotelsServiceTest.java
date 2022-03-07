@@ -47,7 +47,6 @@ class ConsultHotelsServiceTest {
     private List<HotelInfoResponseDto> hotelInformationResponses;
     HotelInfoResponseDto hotelInfoResponseDto;
 
-    private List<HotelInfoClientResponseDto> hotelInfoClientResponsesByCity;
     private List<HotelInfoClientResponseDto> hotelInfoClientResponsesByHotel;
 
     @MockBean
@@ -61,7 +60,7 @@ class ConsultHotelsServiceTest {
     @BeforeEach
     public void setup(){
         fillHotels();
-        fillHotels2();
+        fillHotelsClientResponse();
         consultHotelsService = new ConsultHotelsService(consultHotelInfoClient, consultHotelInformationServiceCache, hotelInfoResponseMapper);
     }
 
@@ -164,30 +163,17 @@ class ConsultHotelsServiceTest {
         hotelInformationResponses = new ArrayList<>(Arrays.asList(hotelInfoResponse1,hotelInfoResponse2,hotelInfoResponse3));
     }
 
-    private void fillHotels2(){
+    private void fillHotelsClientResponse(){
         PriceDto price1 = new PriceDto(BigDecimal.valueOf(132.45),BigDecimal.valueOf(592.69));
         PriceDto price2 = new PriceDto(BigDecimal.valueOf(132.54),BigDecimal.valueOf(592.69));
-        PriceDto price3 = new PriceDto(BigDecimal.valueOf(152.45),BigDecimal.valueOf(552.67));
-        PriceDto price4 = new PriceDto(BigDecimal.valueOf(142.47),BigDecimal.valueOf(542.68));
-        PriceDto price5 = new PriceDto(BigDecimal.valueOf(162.48),BigDecimal.valueOf(517.67));
-        PriceDto price6 = new PriceDto(BigDecimal.valueOf(192.47),BigDecimal.valueOf(538.63));
 
         RoomClientDto room1 = new RoomClientDto(1L, "test1",price1);
         RoomClientDto room2 = new RoomClientDto(2L, "test2",price2);
-        RoomClientDto room3 = new RoomClientDto(3L, "test3",price3);
-        RoomClientDto room4 = new RoomClientDto(4L, "test4",price4);
-        RoomClientDto room5 = new RoomClientDto(5L,"test5",price5);
-        RoomClientDto room6 = new RoomClientDto(6L, "test6",price6);
 
         List<RoomClientDto> roomList1 = new ArrayList<>(Arrays.asList(room1, room2));
-        List<RoomClientDto> roomList2 = new ArrayList<>(Arrays.asList(room3, room4));
-        List<RoomClientDto> roomList3 = new ArrayList<>(Arrays.asList(room5, room6));
 
         HotelInfoClientResponseDto hotelInfoClient1 = new HotelInfoClientResponseDto(1L,"Hotel test1","123","Porto Seguro",roomList1);
-        HotelInfoClientResponseDto hotelInfoClient2 = new HotelInfoClientResponseDto(2L,"Hotel test2","321","Fortaleza",roomList2);
-        HotelInfoClientResponseDto hotelInfoClient3 = new HotelInfoClientResponseDto(3L,"Hotel test3","132","Porto Alegre",roomList3);
 
-        hotelInfoClientResponsesByCity = new ArrayList<>(Arrays.asList(hotelInfoClient1, hotelInfoClient2, hotelInfoClient3));
         hotelInfoClientResponsesByHotel = new ArrayList<>(List.of(hotelInfoClient1));
     }
 }
