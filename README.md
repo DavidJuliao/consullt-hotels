@@ -7,9 +7,7 @@ filtrar as informações capturando os valores de adultos e crianças e realizar
 
 De que coisas você precisa para instalar o software e como instalá-lo?
 
-```
-Incluir as variaveis de ambiente contidas no Dockerfile
-```
+Instalar o Redis para que a funcionalidade de chache funcione, pode fazê-lo seguindo o link - [Instalação Redis](https://medium.com/@prog.tiago/redis-instalando-via-docker-58cb1d2cfb3b)
 
 ## 🛠️ Construído com
 
